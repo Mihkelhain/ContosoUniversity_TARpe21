@@ -14,12 +14,12 @@ namespace ContosoUniversity_TARpe21.Data
             }
             var students = new Student[]
             {
-            new Student() {FirstMidName="Mihkel" ,LastName="Hain", EnrollementDate=DateTime.Now} ,
-            new Student() { FirstMidName = "Hannes", LastName = "Malter", EnrollementDate = DateTime.Parse("2022-12-13") },
-            new Student() { FirstMidName = "Robin", LastName = "Kristanjson", EnrollementDate = DateTime.Parse("2022-12-13") },
-            new Student() { FirstMidName = "Martin", LastName = "Hõbesalu", EnrollementDate = DateTime.Parse("2022-12-13") },
-            new Student() { FirstMidName = "Kristjan ", LastName = "Kivikangur", EnrollementDate = DateTime.Parse("2022-12-13") },
-            new Student() { FirstMidName = "Zilean", LastName = "Gaming", EnrollementDate = DateTime.Parse("2022-12-13") }
+            new Student() {FirstMidName="Mihkel" ,LastName="Hain", EnrollmentDate=DateTime.Now} ,
+            new Student() { FirstMidName = "Hannes", LastName = "Malter", EnrollmentDate = DateTime.Parse("2022-12-13") },
+            new Student() { FirstMidName = "Robin", LastName = "Kristanjson", EnrollmentDate = DateTime.Parse("2022-12-13") },
+            new Student() { FirstMidName = "Martin", LastName = "Hõbesalu", EnrollmentDate = DateTime.Parse("2022-12-13") },
+            new Student() { FirstMidName = "Kristjan ", LastName = "Kivikangur", EnrollmentDate = DateTime.Parse("2022-12-13") },
+            new Student() { FirstMidName = "Zilean", LastName = "Gaming", EnrollmentDate = DateTime.Parse("2022-12-13") }
             };
             //context.Students.AddRange(students);
             foreach ( Student s in students ) 
