@@ -1,50 +1,48 @@
-﻿@model ContosoUniversity_TARpe21.Models.Student
+﻿@model IEnumerable<ContosoUniversity_TARpe21.Models.Student>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Details</h1>
+<h1>Index</h1>
 
-<div>
-    <h4>Student</h4>
-    <hr />
-    <dl class="row">
-    <dt class="col-sm-2">
-        @Html.DisplayFor(Model => Model.FirstMidName)
-    </dt>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(Model => Model.FirstMidName)
-    </dt>
-    <dt class="col-sm-2">
-        @Html.DisplayFor(Model => Model.LastName)
-    </dt>
-    dt class="col-sm-2">
-    @Html.DisplayNameFor(Model => Model.LastName)
-    </dt>
-    <dt class="col-sm-2">
-        @Html.DisplayFor(Model => Model.EnrollmentDate)
-    </dt>
-    dt class="col-sm-2">
-    @Html.DisplayNameFor(Model => Model.EnrollmentDate)
-    </dt>
-    <dt class="col-sm-2">
-        @Html.DisplayFor(Model => Model.Enrollement)
-    </dt>
-    dt class="col-sm-2">
-    @Html.DisplayNameFor(Model => Model.Enrollement)
-    </dt>
-    <dd class=" col-sm-10">
-        <table class="table">
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstMidName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnrollmentDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>Course Titel</th>
-                <th>Course</th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstMidName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnrollmentDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
             </tr>
-            @foreach (var item in Model.Enrollement)
-            {
-                    
-                }
-        </table>
-    </dd>
-    </dl>
-</div>
+        }
+    </tbody>
+</table>

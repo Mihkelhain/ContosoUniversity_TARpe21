@@ -28,6 +28,8 @@ namespace ContosoUniversity_TARpe21.Data
             }
             context.SaveChanges();
 
+
+
             var courses = new Course[]
             {
                 new Course()  {CourseId=1050,Title="Programeerimine",Credits=160},
@@ -45,23 +47,23 @@ namespace ContosoUniversity_TARpe21.Data
 
             var enrollments = new Enrollment[]
             {
-                new Enrollment{StudentId=1,CourseId=1050,grade=Grade.A},
-                new Enrollment{StudentId=1,CourseId=1240,grade=Grade.A},
-                new Enrollment{StudentId=1,CourseId=4302,grade=Grade.B},
-                new Enrollment{StudentId=2,CourseId=5531,grade=Grade.C},
-                new Enrollment{StudentId=2,CourseId=1050,grade=Grade.A},
-                new Enrollment{StudentId=4,CourseId=1240,grade=Grade.A},
-                new Enrollment{StudentId=4,CourseId=4302,grade=Grade.B},
-                new Enrollment{StudentId=4,CourseId=5531,grade=Grade.C},
-                new Enrollment{StudentId=3,CourseId=1050,grade=Grade.A},
-                new Enrollment{StudentId=1,CourseId=1240,grade=Grade.A},
-                new Enrollment{StudentId=3,CourseId=4302,grade=Grade.B},
-                new Enrollment{StudentId=1,CourseId=5531,grade=Grade.C},
-                new Enrollment{StudentId=3,CourseId=1050,grade=Grade.A},
-                new Enrollment{StudentId=2,CourseId=1240,grade=Grade.A},
-                new Enrollment{StudentId=2,CourseId=4302,grade=Grade.B},
-                new Enrollment{StudentId=5,CourseId=5531,grade=Grade.C},
-                new Enrollment{StudentId=4,CourseId=1050,grade=Grade.A},
+                new Enrollment{StudentID=1,CourseID=1050,Grade=Grade.A},
+                new Enrollment{StudentID=1,CourseID=1240,Grade=Grade.A},
+                new Enrollment{StudentID=1,CourseID=4302,Grade=Grade.B},
+                new Enrollment{StudentID=2,CourseID=5531,Grade=Grade.C},
+                new Enrollment{StudentID=2,CourseID=1050,Grade=Grade.A},
+                new Enrollment{StudentID=4,CourseID=1240,Grade=Grade.A},
+                new Enrollment{StudentID=4,CourseID=4302,Grade=Grade.B},
+                new Enrollment{StudentID=4,CourseID=5531,Grade=Grade.C},
+                new Enrollment{StudentID=3,CourseID=1050,Grade=Grade.A},
+                new Enrollment{StudentID=1,CourseID=1240,Grade=Grade.A},
+                new Enrollment{StudentID=3,CourseID=4302,Grade=Grade.B},
+                new Enrollment{StudentID=1,CourseID=5531,Grade=Grade.C},
+                new Enrollment{StudentID=3,CourseID=1050,Grade=Grade.A},
+                new Enrollment{StudentID=2,CourseID=1240,Grade=Grade.A},
+                new Enrollment{StudentID=2,CourseID=4302,Grade=Grade.B},
+                new Enrollment{StudentID=5,CourseID=5531,Grade=Grade.C},
+                new Enrollment{StudentID=4,CourseID=1050,Grade=Grade.A},
 
             };
 
@@ -70,6 +72,16 @@ namespace ContosoUniversity_TARpe21.Data
                 context.Enrollments.Add(e);
             }
             context.SaveChanges();
+
+            var Instructors = new Instructor();
+            {
+                new Instructor { FirstMidName = "", LastName = "", HireDate = DateTime.Parse("1996-03-05") };
+                new Instructor { FirstMidName = "", LastName = "", HireDate = DateTime.Parse("1996-03-05") };
+                new Instructor { FirstMidName = "", LastName = "", HireDate = DateTime.Parse("1996-03-05") };
+            }
+            
+
+
         }
-        }
+    }
     }
