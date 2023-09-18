@@ -10,6 +10,12 @@ namespace ContosoUniversity_TARpe21.Models
         public string FirstMidName { get; set; }
         public DateTime EnrollmentDate { get; set; }
 
+        [Display(Name = "Full Name")]
+        public string FullName
+        {
+            get
+            { return LastName + ", " + FirstMidName; }
+        }
         public ICollection<Enrollment> Enrollments { get; set; }
     }
     
