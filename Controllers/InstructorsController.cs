@@ -14,7 +14,7 @@ namespace ContosoUniversity_TARpe21.Controllers
         }
         public async Task<IActionResult> Index(int? id, int? CourseId)
         {
-            var vm = new InstructorIndexdata();
+            var vm = new InstructorIndexData();
             vm.Instructors = await _context.Instructors
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments)

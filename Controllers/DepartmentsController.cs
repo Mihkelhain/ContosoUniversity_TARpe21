@@ -124,7 +124,81 @@ namespace ContosoUniversity_TARpe21.Controllers
                     {
                         ModelState.AddModelError(string.Empty, "Unable to save Changes. The Deparment has been deleted by another user"); 
                     }
+                    else
+                    {
+                        var databaseValues = (Department)dataBaseEntry.ToObject();
+
+                        if(databaseValues.Name != clientValues.Name)
+                        {
+                            ModelState.AddModelError("Name", $"Current value: {databaseValues.Name}");
+                        }
+                        if (databaseValues.Budget != clientValues.Budget)
+                        {
+                            ModelState.AddModelError("Budget", $"Current value: {databaseValues.Budget}");
+                        }
+                        if (databaseValues.StartDate != clientValues.StartDate)
+                        {
+                            ModelState.AddModelError("Name", $"Current value: {databaseValues.StartDate}");
+                        }
+                        if (databaseValues.InstructorID != clientValues.InstructorID)
+                        {
+                            Instructor databaseInstructors = await _context.Instructors.FirstOrDefaultAsync(i => i.ID == databaseValues.InstructorID);
+                            ModelState.AddModelError("Name", $"Current value: {databaseValues.InstructorID}");
+                        }
+                        ModelState.AddModelError(string.Empty, "The Record you attempted to edit " + "was modified by another user after you got the original value. The" + "Edit operation was cancelled and the current values in the database" + "have been displayed. If you still want to edit this record. Click" + " The save button again. OtherWise clcik the back to list hyperlink.");
+                        departmentToUpdate.RowVersion = databaseValues.RowVersion;
+                        ModelState.Remove("Rowversion");
+                    }
                 }
+            }
+            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", departmentToUpdate.InstructorID);
+            return View(departmentToUpdate);
+        }
+
+        //get delete
+
+        public async Task<IActionResult> Delete(int? id, bool? concurrencyError)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var depratment = await _context.Departments
+                 .Include(d => d.Administrator)
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(m => m.DepartmentID == id);
+
+            if (depratment == null) 
+            {
+                if(concurrencyError.GetValueOrDefault()) 
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                return NotFound(); 
+            }
+            if(concurrencyError.GetValueOrDefault())
+            {
+                ViewData["ConcurrencyErrorMessage"] = "The Record you attempted to edit " + "was modified by another user after you got the original value. The" + "Edit operation was cancelled and the current values in the database" + "have been displayed. If you still want to edit this record. Click" + " The save button again. OtherWise clcik the back to list hyperlink.";
+            }
+            return View(depratment);
+        }
+        // post Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Department department)
+        {
+            try
+            {
+                if(await _context.Departments.AnyAsync(m=>m.DepartmentID == department.DepartmentID))
+                {
+                    _context.Departments.Remove(department);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException ex) 
+            {
+                return RedirectToAction(nameof(Delete), new { concurrencyError = true, id = department.DepartmentID });
             }
         }
     }
