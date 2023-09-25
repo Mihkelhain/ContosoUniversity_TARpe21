@@ -20,14 +20,15 @@ namespace ContosoUniversity_TARpe21.Models
         [Display(Name = "Full Name")]
         public string FullName
         {
-            get
-            { return LastName + ", " + FirstMidName; }
+            get { return LastName + ", " + FirstMidName; }
         }
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Hire Date")]
         public DateTime HireDate { get; set; }
+
         public ICollection<CourseAssignment> CourseAssignments { get; set; }
-        public OfficeAssignment OfficeAssignments { get; set; }
+
+        public OfficeAssignment OfficeAssignment { get; set; }
     }
 }
