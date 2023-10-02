@@ -1,7 +1,10 @@
-﻿namespace ContosoUniversity_TARpe21.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ContosoUniversity_TARpe21.Models
 {
     public class CourseAssignment
     {
+        [Key]
         public int ID { get; set; }
 
         public int InstructorId { get; set; }

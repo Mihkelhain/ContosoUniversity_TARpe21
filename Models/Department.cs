@@ -5,6 +5,7 @@ namespace ContosoUniversity_TARpe21.Models
 {
     public class Department
     {
+        [Key]
         public int DepartmentID { get; set; }
         [StringLength(50, MinimumLength = 3)]
         public string Name { get; set; }

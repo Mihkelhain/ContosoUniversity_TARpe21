@@ -29,7 +29,7 @@ namespace ContosoUniversity_TARpe21.Controllers
                 .ToListAsync();
             if (id != null)
             {
-                ViewData["InstructorID"] = id.Value;
+                ViewData["InstructorId"] = id.Value;
                 Instructor instructor = vm.Instructors
                     .Where(i => i.ID == id.Value).Single();
                 vm.Courses = instructor.CourseAssignments
@@ -45,33 +45,21 @@ namespace ContosoUniversity_TARpe21.Controllers
             }
             return View(vm);
         }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var instructor = await _context.Instructors
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
-            return View(instructor);
-        }
         [HttpGet]
         public IActionResult Create()
         {
             var instructor = new Instructor();
             instructor.CourseAssignments = new List<CourseAssignment>();
+            PopulateAssignedCourseData(instructor);
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Instructor instructor, string selectedCourses)
+        public async Task<IActionResult> Create([Bind("HireDate,FirstMidName,LastName,OfficeAssignment")] Instructor instructor, string[] selectedCourses)
         {
-            if (selectedCourses == null)
+            ModelState.Remove("OfficeAssignment.Instructor");
+            if (selectedCourses != null)
             {
                 instructor.CourseAssignments = new List<CourseAssignment>();
                 foreach (var course in selectedCourses)
@@ -79,7 +67,7 @@ namespace ContosoUniversity_TARpe21.Controllers
                     var courseToAdd = new CourseAssignment
                     {
                         InstructorId = instructor.ID,
-                        CourseId = course
+                        CourseId = int.Parse(course)
                     };
                     instructor.CourseAssignments.Add(courseToAdd);
                 }
@@ -91,6 +79,20 @@ namespace ContosoUniversity_TARpe21.Controllers
                 return RedirectToAction(nameof(Index));
             }
             PopulateAssignedCourseData(instructor);
+            return View(instructor);
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.ID == id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
             return View(instructor);
         }
         [HttpGet]
@@ -144,8 +146,8 @@ namespace ContosoUniversity_TARpe21.Controllers
                 catch (DbUpdateException)
                 {
                     ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try Again, and if the problem persists, " +
-                        "see your local computermonkey.");
+                            "Try Again, and if the problem persists, " +
+                            "see your system administrator.");
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -153,8 +155,43 @@ namespace ContosoUniversity_TARpe21.Controllers
             PopulateAssignedCourseData(instructorToUpdate);
 
             return View();
-        }
 
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var instructor = await _context.Instructors
+                .FirstOrDefaultAsync(s => s.ID == id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            return View(instructor);
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            Instructor instructor = await _context.Instructors
+                .Include(i => i.CourseAssignments)
+                .SingleAsync(i => i.ID == id);
+
+            var departments = await _context.Departments
+                 .Where(d => d.InstructorID == id)
+                 .ToListAsync();
+            departments.ForEach(d => d.InstructorID = null);
+
+            _context.Instructors.Remove(instructor);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
         private void UpdateInstructorCourses(string[] selectedCourses, Instructor instructorToUpdate)
         {
             if (selectedCourses == null)
@@ -176,7 +213,8 @@ namespace ContosoUniversity_TARpe21.Controllers
                     {
                         if (instructorCourses.Contains(course.CourseId))
                         {
-                            CourseAssignment courseToRemove = instructorToUpdate.CourseAssignments.FirstOrDefault(c => c.CourseId == course.CourseId);
+                            CourseAssignment courseToRemove = instructorToUpdate.CourseAssignments
+                                .FirstOrDefault(c => c.CourseId == course.CourseId);
                             _context.Remove(courseToRemove);
                         }
                     }
@@ -200,6 +238,5 @@ namespace ContosoUniversity_TARpe21.Controllers
             }
             ViewData["Courses"] = vm;
         }
-
     }
 }
