@@ -1,156 +1,167 @@
 ﻿using ContosoUniversity_TARpe21.Data;
 using ContosoUniversity_TARpe21.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity_TARpe21.Controllers
 {
     public class CoursesController : Controller
     {
-
         private readonly SchoolContext _context;
 
         public CoursesController(SchoolContext context)
         {
             _context = context;
         }
+
+        // GET: Courses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Students.ToListAsync());
+            var schoolContext = _context.Courses.Include(c => c.Department);
+            return View(await schoolContext.ToListAsync());
         }
 
+        // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Courses == null)
             {
                 return NotFound();
             }
-            var student = await _context.Students
-                .Include(s => s.Enrollments)
-                .ThenInclude(e => e.Course)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (student == null)
+
+            var course = await _context.Courses
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(m => m.CourseId == id);
+            if (course == null)
             {
                 return NotFound();
             }
-            return View(student);
+
+            return View(course);
         }
+
+        // GET: Courses/Create
         public IActionResult Create()
         {
+            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name");
             return View();
         }
+
+        // POST: Courses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EnrollmentDate,FirstMidName,LastName")] Student student)
+        public async Task<IActionResult> Create([Bind("CourseID,Title,Credits,DepartmentID")] Course course)
         {
-            try
+            ModelState.Remove("Enrollments");
+            ModelState.Remove("CourseAssignments");
+            ModelState.Remove("Department");
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(student);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
+                _context.Add(course);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception)
-            {
-                ModelState.AddModelError("", "Unable to save changes. "
-                    + "Try again, and if the problem persist "
-                    + "see your system administrator.");
-            }
-            return View(student);
+            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            return View(course);
         }
 
+        // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Courses == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Students.FindAsync(id);
-            if (student == null)
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null)
             {
                 return NotFound();
             }
-            return View(student);
+            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            return View(course);
         }
-        [HttpPost, ActionName("Edit")]
+
+        // POST: Courses/Edit/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> Edit(int id, [Bind("CourseID,Title,Credits,DepartmentID")] Course course)
         {
-            if (id == null)
+            ModelState.Remove("Enrollments");
+            ModelState.Remove("CourseAssignments");
+            ModelState.Remove("Department");
+            if (id != course.CourseId)
             {
                 return NotFound();
             }
-            var studentToUpdate = await _context.Students.FirstOrDefaultAsync(s => s.ID == id);
-            if (await TryUpdateModelAsync<Student>(studentToUpdate, "", s => s.FirstMidName,
-                s => s.LastName, s => s.EnrollmentDate))
+
+            if (ModelState.IsValid)
             {
                 try
                 {
+                    _context.Update(course);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateException)
+                catch (DbUpdateConcurrencyException)
                 {
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persist " +
-                        "see your system administrator.");
+                    if (!CourseExists(course.CourseId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-            }
-            return View(studentToUpdate);
-        }
-        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var student = await _context.Students
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.ID == id);
-            if (student == null)
-            {
-                return NotFound();
-            }
-
-            if (saveChangesError.GetValueOrDefault())
-            {
-                ViewData["ErrorMessage"] =
-                    "Deletion has failed, Please try again, and if the problem persists "
-                    + "see your system administrator.";
-            }
-            return View(student);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
-        {
-            var student = await _context.Students.FindAsync(id);
-            if (student == null)
-            {
                 return RedirectToAction(nameof(Index));
             }
-            try
-            {
-                _context.Students.Remove(student);
-                await _context.SaveChangesAsync();
-                return Redirect(nameof(Index));
-            }
-            catch (DbUpdateException)
-            {
-                return RedirectToAction(nameof(Index), new
-                {
-                    id = id,
-                    SaveChangesError = true
-                });
-            }
+            ViewData["DepartmentID"] = new SelectList(_context.Departments, "DepartmentID", "Name", course.DepartmentID);
+            return View(course);
         }
 
-    }
+        // GET: Courses/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || _context.Courses == null)
+            {
+                return NotFound();
+            }
 
+            var course = await _context.Courses
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(m => m.CourseId == id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            return View(course);
+        }
+
+        // POST: Courses/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (_context.Courses == null)
+            {
+                return Problem("Entity set 'SchoolContext.Courses'  is null.");
+            }
+            var course = await _context.Courses.FindAsync(id);
+            if (course != null)
+            {
+                _context.Courses.Remove(course);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool CourseExists(int id)
+        {
+            return (_context.Courses?.Any(e => e.CourseId == id)).GetValueOrDefault();
+        }
+    }
 }
 

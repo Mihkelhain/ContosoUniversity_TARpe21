@@ -73,7 +73,7 @@ namespace ContosoUniversity_TARpe21.Data
                 },
                 new Department
                 {
-                    Name = "Internet Trolling & Tiktok 101",
+                    Name = "Tiktok 101",
                     Budget = 0,
                     StartDate = DateTime.Parse("2007-09-01"),
                     InstructorID = instructors.Single(i => i.LastName == "Kuningas").ID
